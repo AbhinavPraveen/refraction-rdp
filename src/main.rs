@@ -25,7 +25,7 @@ fn main() {
 
         let s = unshare_netns();
         if s == 0 {
-            println!("Moved to new netns")
+            println!("Moved main thread to new netns")
         } else {
             panic!("Failed to unshare, err: {}", get_err())
         }
