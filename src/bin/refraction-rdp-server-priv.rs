@@ -1,5 +1,5 @@
 use refraction_rdp::*;
-use std::io::Read;
+use std::io::{Write, BufRead};
 
 fn main() {
     let wg_name = "wg-refraction";
@@ -16,7 +16,16 @@ fn main() {
             let mut req_stream = req_sock.accept()
                 .expect(format!("Failed to accept stream at {}", sock_path).as_str())
                 .0;
-            req_stream.read_to_string(&mut pid).expect("Failed to get data from request stream.");
+
+            {
+                let reader = req_stream.try_clone().expect("Could not clone request steam.");
+                let mut reader = std::io::BufReader::new(reader);
+                reader.read_line(&mut pid)
+                    .expect("Failed to get data from request stream.");
+                pid.pop();
+            }
+
+                    //.req_stream.read_to_string(&mut pid).expect("Failed to get data from request stream.");
             println!("Received request to provide a wireguard interface to pid: {}", pid);
             
 
@@ -39,6 +48,8 @@ fn main() {
                     exitmsg(format!("Failed to move wireguard interface {} to netns of pid: {}.", wg_name, &pid.to_string()), move_wg_status);
                 }
             }
+
+            req_stream.write("Done".as_bytes()).expect("Failed to respond to request.");
 
         }
     }
