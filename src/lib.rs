@@ -1,4 +1,4 @@
-use std::{process::{Command,ExitStatus}, sync::mpsc::Receiver, os::unix::{net::UnixListener,process::CommandExt}};
+use std::{process::{Command,ExitStatus,id}, sync::mpsc::Receiver, os::unix::{net::{UnixListener,UnixStream},process::CommandExt}, io::{Write,Read}};
 use libc;
 
 pub fn create_wg(name: &str) -> ExitStatus {
@@ -24,11 +24,22 @@ pub fn stay_behind_orig_netns(wg_name: &str, rx: Receiver<()>, pid: u32) {
 
 pub fn exec_sunshine() {
     let err = Command::new("sunshine")
-        .env("PULSE_SERVER", "unix:/run/user/1000/pulse/native")
+        .env("PULSE_SERVER", sunshine_path())
         .exec();
     panic!("{}", err)
 }
 
+pub fn exec_moonlight() {
+    let err = Command::new("flatpak")
+        .args(["run", "com.moonlight_stream.Moonlight"])
+        .env("PULSE_SERVER", sunshine_path())
+        .exec();
+    panic!("{}", err)
+}
+
+pub fn sunshine_path() -> String {
+    format!("unix:/run/user/{}/pulse/native", unsafe {libc::getuid()})
+}
 
 pub fn unshare_netns() -> i32 {
     unsafe { libc::unshare(libc::CLONE_NEWNET) }
@@ -62,4 +73,36 @@ pub fn move_wg(name: &str, pid: &str) -> ExitStatus {
         .args(["link", "set", "dev", name, "netns", pid])
         .spawn().expect("Failed run ip, do you have it installed?")
         .wait().expect("Failed to wait on child, something went very wrong.")
+}
+
+pub fn get_wireguard() {
+    let sock_name = "/tmp/refraction-rdp.sock";
+    {
+        let s = unshare_user_netns();
+        if s == 0 {
+            println!("Moved main thread to new netns");
+        } else {
+            panic!("Failed to unshare, err: {}", get_err());
+        }
+    }
+
+    {
+        println!("Making request for wireguard interface on {}", sock_name);
+        let mut req_stream = UnixStream::connect(sock_name)
+            .expect(format!("Failed to connect to {} has the privileged service been started and do you have permission to connect to the socket?", sock_name).as_str());
+
+        writeln!(req_stream, "{}", id())
+            .expect(format!("Failed to write to {} - something went wrong.", sock_name).as_str());
+        //  .write(id().to_string().as_bytes())
+        //    .expect(format!("Failed to write to {} - something went wrong.", sock_name).as_str());
+        println!("Made request for wireguard interface on {}", sock_name);
+
+        let mut resp = String::new();
+        req_stream.read_to_string(&mut resp).expect("Failed to read respone.");
+        if resp == "Done" {
+            println!("Request was completed.")
+        } else {
+            panic!("Server did not provide the expect response: {}", resp);
+        }
+    }
 }
