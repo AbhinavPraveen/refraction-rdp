@@ -32,5 +32,5 @@ fn main() {
         }
     }
     
-    pause()
+    exec_sunshine();
 }

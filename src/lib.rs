@@ -1,4 +1,4 @@
-use std::{process::{Command,ExitStatus}, sync::mpsc::Receiver, os::unix::net::UnixListener};
+use std::{process::{Command,ExitStatus}, sync::mpsc::Receiver, os::unix::{net::UnixListener,process::CommandExt}};
 use libc;
 
 pub fn create_wg(name: &str) -> ExitStatus {
@@ -20,6 +20,15 @@ pub fn stay_behind_orig_netns(wg_name: &str, rx: Receiver<()>, pid: u32) {
         exitmsg(format!("Failed to move wireguard interface {} to netns of pid: {}.", wg_name, pid.to_string()), move_wg_status);
     }
 }
+
+
+pub fn exec_sunshine() {
+    let err = Command::new("sunshine")
+        .env("PULSE_SERVER", "unix:/run/user/1000/pulse/native")
+        .exec();
+    panic!("{}", err)
+}
+
 
 pub fn unshare_netns() -> i32 {
     unsafe { libc::unshare(libc::CLONE_NEWNET) }
