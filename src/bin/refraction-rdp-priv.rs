@@ -34,14 +34,18 @@ fn main() {
                 reader
                     .read_line(&mut pid)
                     .expect("Failed to get data from request stream.");
+                println!("Received request: {}", pid);
                 pid.pop();
-                let req_type = pid.pop();
-                if req_type == Some('s') {
-                    println!("Request type is server ({})", req_type);
-                    wg_addr = wg_serv_addr;
+                if let Some(req_type) = pid.pop(){
+                    if req_type == 's' {
+                        println!("Request type is server ({})", req_type);
+                        wg_addr = wg_serv_addr;
+                    } else {
+                        println!("Request type is client ({})", req_type);
+                        wg_addr = wg_cli_addr;
+                    }
                 } else {
-                    println!("Request type is client ({})", req_type);
-                    wg_addr = wg_cli_addr;
+                    panic!("Recieved invalid request.")
                 }
             }
 
