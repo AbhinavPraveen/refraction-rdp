@@ -37,10 +37,10 @@ fn main() {
                 pid.pop();
                 let req_type = pid.pop();
                 if req_type == Some('s') {
-                    println("Request type is server ({})", req_type);
+                    println!("Request type is server ({})", req_type);
                     wg_addr = wg_serv_addr;
                 } else {
-                    println("Request type is client ({})", req_type);
+                    println!("Request type is client ({})", req_type);
                     wg_addr = wg_cli_addr;
                 }
             }
