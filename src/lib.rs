@@ -44,17 +44,17 @@ pub fn stay_behind_orig_netns(wg_name: &str, rx: Receiver<()>, pid: u32) {
     }
 }
 
-pub fn exec_sunshine() {
+pub fn exec_sunshine(pulse_path: &String) {
     let err = Command::new("sunshine")
-        .env("PULSE_SERVER", pulse_path())
+        .env("PULSE_SERVER", pulse_path)
         .exec();
     panic!("{}", err)
 }
 
-pub fn exec_moonlight() {
+pub fn exec_moonlight(pulse_path: &String) {
     let err = Command::new("flatpak")
         .args(["run", "com.moonlight_stream.Moonlight"])
-        .env("PULSE_SERVER", pulse_path())
+        .env("PULSE_SERVER", pulse_path)
         .exec();
     panic!("{}", err)
 }
