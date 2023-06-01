@@ -5,6 +5,6 @@ fn main() {
     let wg_name = &"wg_refraction";
     let wg_addr = &"10.10.10.1/24";
 
-    get_wireguard('s');
-    exec_sunshine(pulse_path, wg_name, wg_addr);
+    get_wireguard('s', wg_name, wg_addr);
+    exec_sunshine(pulse_path);
 }
