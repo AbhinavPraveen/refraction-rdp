@@ -150,7 +150,7 @@ pub fn netns_wg_up(name: &str) -> ExitStatus {
         .expect("Failed to wait on child, something went very wrong.")
 }
 
-pub fn get_wireguard(req_type: char) {
+pub fn get_wireguard(req_type: char, wg_name: &str, addr: &str) {
     let sock_name = "/tmp/refraction-rdp.sock";
     {
         let s = unshare_user_netns();
@@ -204,20 +204,13 @@ pub fn get_wireguard(req_type: char) {
             panic!("Server did not provide the expect response: {}", resp);
         }
     }
+
+    println!("Configuring wireguard in the pid netns.");
+    netns_conf_ip(wg_name: &str, addr: &str)
 }
 
-pub fn netns_conf_ip(wg_name: &str, addr: &str, pid: &str) {
+pub fn netns_conf_ip(wg_name: &str, addr: &str) {
     println!("Begining netns configuration.");
-    let s = setns(pid);
-    if s == 0 {
-        println!("Moved to namespace of pid: {}", pid);
-    } else {
-        panic!(
-            "Failed to setns to that of pid: {}, err: {}",
-            pid,
-            get_err()
-        );
-    }
 
     let netns_wg_addr_status = netns_wg_addr(wg_name, addr);
     if netns_wg_addr_status.success() {

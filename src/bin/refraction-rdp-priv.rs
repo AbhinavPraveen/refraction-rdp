@@ -107,16 +107,6 @@ fn main() {
                 }
             }
 
-            println!("Configuring wireguard in the pid netns.");
-            {
-                println!("Spawning netns thread.");
-                let netns_conf_handle =
-                    thread::spawn(move || netns_conf_ip(&wg_name, &wg_addr, &pid));
-                netns_conf_handle
-                    .join()
-                    .expect("Netns configuration failed.");
-            }
-
             req_stream
                 .write("Done".as_bytes())
                 .expect("Failed to respond to request.");
