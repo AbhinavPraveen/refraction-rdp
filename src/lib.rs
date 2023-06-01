@@ -161,6 +161,21 @@ pub fn get_wireguard(req_type: char) {
         }
     }
 
+        {
+            let mut file = File::create("/proc/self/setgroups").expect("Opening /proc/self/setgroups failed.");
+            file.write_all(b"deny").expect("Write /proc/self/setgroups failed.");
+        }
+
+        {
+            let mut file = File::create("/proc/self/uid_map").expect("Opening /proc/self/uid_map failed.");
+            file.write_all(b"0 1000 1").expect("Writing /proc/self/uid_map failed.");
+        }
+
+        {
+            let mut file = File::create("/proc/self/gid_map").expect("Opening /proc/self/gid_map failed.");
+            file.write_all(b"0 1000 1").expect("Writing /proc/self/gid_map failed.");
+        }
+
     {
         println!("Making request for wireguard interface on {}", sock_name);
         let mut req_stream = UnixStream::connect(sock_name)
