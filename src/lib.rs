@@ -46,7 +46,7 @@ pub fn stay_behind_orig_netns(wg_name: &str, rx: Receiver<()>, pid: u32) {
 
 pub fn exec_sunshine() {
     let err = Command::new("sunshine")
-        .env("PULSE_SERVER", sunshine_path())
+        .env("PULSE_SERVER", pulse_path())
         .exec();
     panic!("{}", err)
 }
@@ -54,12 +54,12 @@ pub fn exec_sunshine() {
 pub fn exec_moonlight() {
     let err = Command::new("flatpak")
         .args(["run", "com.moonlight_stream.Moonlight"])
-        .env("PULSE_SERVER", sunshine_path())
+        .env("PULSE_SERVER", pulse_path())
         .exec();
     panic!("{}", err)
 }
 
-pub fn sunshine_path() -> String {
+pub fn pulse_path() -> String {
     format!("unix:/run/user/{}/pulse/native", unsafe { libc::getuid() })
 }
 
