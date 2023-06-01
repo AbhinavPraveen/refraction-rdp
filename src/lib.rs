@@ -52,8 +52,7 @@ pub fn exec_sunshine(pulse_path: &String) {
 }
 
 pub fn exec_moonlight(pulse_path: &String) {
-    let err = Command::new("flatpak")
-        .args(["run", "com.moonlight_stream.Moonlight"])
+    let err = Command::new("moonlight")
         .env("PULSE_SERVER", pulse_path)
         .exec();
     panic!("{}", err)
