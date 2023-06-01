@@ -36,7 +36,7 @@ fn main() {
                     .expect("Failed to get data from request stream.");
                 println!("Received request: {}", pid);
                 pid.pop();
-                if let Some(req_type) = pid.pop(){
+                if let Some(req_type) = pid.pop() {
                     if req_type == 's' {
                         println!("Request type is server ({})", req_type);
                         wg_addr = wg_serv_addr;
