@@ -1,5 +1,6 @@
 use libc;
 use std::{
+    fs::File,
     io::{Read, Write},
     os::unix::{
         net::{UnixListener, UnixStream},
@@ -206,7 +207,7 @@ pub fn get_wireguard(req_type: char, wg_name: &str, addr: &str) {
     }
 
     println!("Configuring wireguard in the pid netns.");
-    netns_conf_ip(wg_name: &str, addr: &str)
+    netns_conf_ip(wg_name, addr)
 }
 
 pub fn netns_conf_ip(wg_name: &str, addr: &str) {
