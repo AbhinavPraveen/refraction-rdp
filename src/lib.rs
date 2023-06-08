@@ -80,7 +80,7 @@ pub fn pause() {
     }
 }
 
-pub fn create_sock(path: &str) -> std::io::Result<UnixListener> {
+pub fn create_sock(path: &String) -> std::io::Result<UnixListener> {
     UnixListener::bind(path)
 }
 

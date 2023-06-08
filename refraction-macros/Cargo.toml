@@ -1,15 +1,11 @@
 [package]
-name = "refraction-rdp"
+name = "refraction-macros"
 version = "0.1.0"
 edition = "2021"
+
+[lib]
+crate-type = ["proc-macro"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-libc = "0.2"
-rust-ini = "0.19"
-refraction-macros = { path = "refraction-macros" }
-
-[profile.release]
-lto = true
-strip = true

@@ -3,16 +3,30 @@ use std::{
     io::{BufRead, Write},
     thread,
 };
+use ini::Ini;
+use refraction_macros::*;
 
 fn main() {
-    let wg_name = "wg-refraction";
-    let wg_conf = "/etc/wireguard/wg-refraction.conf";
-    let wg_serv_addr = "10.10.10.1/24";
-    let wg_cli_addr = "10.10.10.2/24";
-    let mut wg_addr = "";
-    let sock_path = "/tmp/refraction-rdp.sock";
 
-    let req_sock = create_sock(sock_path)
+    let conf_path = "/etc/refraction-rdp/refraction.conf";
+
+    let mut wg_name = "wg-refraction".to_string();
+    let mut wg_conf = "/etc/wireguard/wg-refraction.conf".to_string();
+    let mut wg_serv_addr = "10.10.10.1/24";
+    let mut wg_cli_addr = "10.10.10.2/24";
+    let mut wg_addr = "";
+    let mut sock_path = "/tmp/refraction-rdp.sock".to_string();
+
+    if let Ok(conf) = Ini::load_from_file(conf_path) {
+        println!("Read configuration from {}.", conf_path);
+        if let Some(section) = conf.section(Some("Refraction")) {
+            assign_some!(section, "socket_path", sock_path);
+            assign_some!(section, "wireguard_conf", wg_conf);
+            assign_some!(section, "wg_name", wg_name);
+        }
+    }
+
+    let req_sock = create_sock(&sock_path)
         .expect(format!("Failed to create Unix Socket at {}", sock_path).as_str());
     println!("Created request socket at {}", sock_path);
 
