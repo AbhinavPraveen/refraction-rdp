@@ -12,9 +12,6 @@ fn main() {
 
     let mut wg_name = "wg-refraction".to_string();
     let mut wg_conf = "/etc/wireguard/wg-refraction.conf".to_string();
-    let mut wg_serv_addr = "10.10.10.1/24";
-    let mut wg_cli_addr = "10.10.10.2/24";
-    let mut wg_addr = "";
     let mut sock_path = "/tmp/refraction-rdp.sock".to_string();
 
     if let Ok(conf) = Ini::load_from_file(conf_path) {
@@ -53,10 +50,8 @@ fn main() {
                 if let Some(req_type) = pid.pop() {
                     if req_type == 's' {
                         println!("Request type is server ({})", req_type);
-                        wg_addr = wg_serv_addr;
                     } else {
                         println!("Request type is client ({})", req_type);
-                        wg_addr = wg_cli_addr;
                     }
                 } else {
                     panic!("Recieved invalid request.")
