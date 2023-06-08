@@ -172,7 +172,7 @@ pub fn get_wireguard(req_type: char, addr: &str) {
         if let Ok(conf) = Ini::load_from_file(conf_path) {
             println!("Read configuration from {}.", conf_path);
             if let Some(section) = conf.section(Some("Refraction")) {
-                assign_some!(section, "sock_path", sock_name);
+                assign_some!(section, "socket_path", sock_name);
                 assign_some!(section, "address", addr);
                 assign_some!(section, "wg_name", wg_name);
             }
