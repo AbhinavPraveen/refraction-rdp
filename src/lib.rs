@@ -61,8 +61,16 @@ pub fn exec_moonlight(pulse_path: &String) {
     panic!("{}", err)
 }
 
+pub fn getuid() -> u32 {
+    unsafe {libc::getuid()}
+}
+
+pub fn getgid() -> u32 {
+    unsafe {libc::getgid()}
+}
+
 pub fn pulse_path() -> String {
-    format!("unix:/run/user/{}/pulse/native", unsafe { libc::getuid() })
+    format!("unix:/run/user/{}/pulse/native", getuid())
 }
 
 pub fn unshare_netns() -> i32 {
@@ -171,6 +179,9 @@ pub fn get_wireguard(req_type: char, addr: &str) {
         }
     }
 
+    let uid = getuid();
+    let gid = getgid();
+
     {
         let s = unshare_user_netns();
         if s == 0 {
@@ -188,16 +199,18 @@ pub fn get_wireguard(req_type: char, addr: &str) {
     }
 
     {
+        let uid_spec = format!("0 {} 1", uid);
         let mut file =
             File::create("/proc/self/uid_map").expect("Opening /proc/self/uid_map failed.");
-        file.write_all(b"0 1000 1")
+        file.write_all(uid_spec.as_bytes())
             .expect("Writing /proc/self/uid_map failed.");
     }
 
     {
+        let gid_spec = format!("0 {} 1", gid);
         let mut file =
             File::create("/proc/self/gid_map").expect("Opening /proc/self/gid_map failed.");
-        file.write_all(b"0 1000 1")
+        file.write_all(gid_spec.as_bytes())
             .expect("Writing /proc/self/gid_map failed.");
     }
 
