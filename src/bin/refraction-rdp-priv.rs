@@ -11,7 +11,7 @@ fn main() {
     let conf_path = "/etc/refraction-rdp/refraction.conf";
 
     let mut wg_name = "wg-refraction".to_string();
-    let mut wg_conf = "/etc/wireguard/wg-refraction.conf".to_string();
+    let mut wg_conf = "/etc/refraction-rdp/wg-refraction.conf".to_string();
     let mut sock_path = "/tmp/refraction-rdp.sock".to_string();
 
     if let Ok(conf) = Ini::load_from_file(conf_path) {
