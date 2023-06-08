@@ -9,6 +9,8 @@ use std::{
     process::{id, Command, ExitStatus},
     sync::mpsc::Receiver,
 };
+use ini::Ini;
+use refraction_macros::*;
 
 pub fn create_wg(name: &str) -> ExitStatus {
     Command::new("ip")
@@ -151,8 +153,24 @@ pub fn netns_wg_up(name: &str) -> ExitStatus {
         .expect("Failed to wait on child, something went very wrong.")
 }
 
-pub fn get_wireguard(req_type: char, wg_name: &str, addr: &str) {
-    let sock_name = "/tmp/refraction-rdp.sock";
+pub fn get_wireguard(req_type: char, addr: &str) {
+    let conf_path = "/etc/refraction-rdp/refraction.conf";
+
+    let mut sock_name = "/tmp/refraction-rdp.sock".to_string();
+    let mut addr = addr.to_string();
+    let mut wg_name = "wg-refraction".to_string();
+
+    {
+        if let Ok(conf) = Ini::load_from_file(conf_path) {
+            println!("Read configuration from {}.", conf_path);
+            if let Some(section) = conf.section(Some("Refraction")) {
+                assign_some!(section, "sock_path", sock_name);
+                assign_some!(section, "address", addr);
+                assign_some!(section, "wg_name", wg_name);
+            }
+        }
+    }
+
     {
         let s = unshare_user_netns();
         if s == 0 {
@@ -185,7 +203,7 @@ pub fn get_wireguard(req_type: char, wg_name: &str, addr: &str) {
 
     {
         println!("Making request for wireguard interface on {}", sock_name);
-        let mut req_stream = UnixStream::connect(sock_name)
+        let mut req_stream = UnixStream::connect(&sock_name)
             .expect(format!("Failed to connect to {} has the privileged service been started and do you have permission to connect to the socket?", sock_name).as_str());
 
         println!("Sending req: {}{}", id(), req_type);
@@ -207,7 +225,7 @@ pub fn get_wireguard(req_type: char, wg_name: &str, addr: &str) {
     }
 
     println!("Configuring wireguard in the pid netns.");
-    netns_conf_ip(wg_name, addr)
+    netns_conf_ip(&wg_name, &addr)
 }
 
 pub fn netns_conf_ip(wg_name: &str, addr: &str) {
