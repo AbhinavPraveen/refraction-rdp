@@ -8,4 +8,4 @@
 
 - `priv` creates a Wireguard interfaces according to the config and configures it. It then moves the wireguard interface into the user namespace of the pid given above. And then writes 'Done' to the socket.
 
-- Then either `client` or `server` configures the Wireguard interface in the network namespace giving it the configured address and setting it up. Then if it is a `client`, it executes moonlight and if `server` executes `sunshine`.
+- Then either `client` or `server` configures the Wireguard interface in the network namespace giving it the configured address and setting it up. Then if it is a `client`, it executes moonlight and if `server`, it spawns `surf` and then executes `sunshine`.
