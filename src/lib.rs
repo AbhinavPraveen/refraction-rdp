@@ -47,6 +47,13 @@ pub fn stay_behind_orig_netns(wg_name: &str, rx: Receiver<()>, pid: u32) {
     }
 }
 
+pub fn spawn_surf() -> std::process::Child {
+    Command::new("surf")
+        .args(["-t", "https://localhost:47990"])
+        .spawn()
+        .expect("Failed to start web interface. Is surf installed?")
+}
+
 pub fn exec_sunshine(pulse_path: &String) {
     let err = Command::new("sunshine")
         .env("PULSE_SERVER", pulse_path)
