@@ -9,6 +9,14 @@ refraction-rdp is a secure Remote Desktop Solution. refraction-rdp is a simple w
 - Only the Wireguard port on the host has to be port forwarded and allowed through the firewall.
 - Only Sunshine and Moonlight have access to their respective Wireguard interfaces.
 
+# Dependencies
+
+- surf
+- iproute2
+- wireguard-tools
+- sunshine
+- moonlight
+
 # Documentation
 
 Further documentation can be found in [docs](docs).
