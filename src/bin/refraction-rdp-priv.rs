@@ -1,5 +1,7 @@
 use refraction_rdp::*;
 use std::{
+    fs::File,
+    os::fd::FromRawFd,
     io::{BufRead, Write},
     thread,
 };
@@ -29,7 +31,7 @@ fn main() {
     
     {
         let mut f = unsafe { File::from_raw_fd(1) };
-        writeln!(&mut f, "READY=1")
+        writeln!(&mut f, "READY=1");
     }
 
     loop {
