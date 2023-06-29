@@ -1,4 +1,6 @@
+use ini::Ini;
 use libc;
+use refraction_macros::*;
 use std::{
     fs::File,
     io::{Read, Write},
@@ -9,8 +11,6 @@ use std::{
     process::{id, Command, ExitStatus},
     sync::mpsc::Receiver,
 };
-use ini::Ini;
-use refraction_macros::*;
 
 pub fn create_wg(name: &str) -> ExitStatus {
     Command::new("ip")
@@ -62,11 +62,11 @@ pub fn exec_moonlight(pulse_path: &String) {
 }
 
 pub fn getuid() -> u32 {
-    unsafe {libc::getuid()}
+    unsafe { libc::getuid() }
 }
 
 pub fn getgid() -> u32 {
-    unsafe {libc::getgid()}
+    unsafe { libc::getgid() }
 }
 
 pub fn pulse_path() -> String {

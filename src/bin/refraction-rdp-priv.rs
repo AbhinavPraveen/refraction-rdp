@@ -1,15 +1,14 @@
+use ini::Ini;
+use refraction_macros::*;
 use refraction_rdp::*;
 use std::{
     fs::File,
-    os::fd::FromRawFd,
     io::{BufRead, Write},
+    os::fd::FromRawFd,
     thread,
 };
-use ini::Ini;
-use refraction_macros::*;
 
 fn main() {
-
     let conf_path = "/etc/refraction-rdp/refraction.conf";
 
     let mut wg_name = "wg-refraction".to_string();
@@ -28,7 +27,7 @@ fn main() {
     let req_sock = create_sock(&sock_path)
         .expect(format!("Failed to create Unix Socket at {}", sock_path).as_str());
     println!("Created request socket at {}", sock_path);
-    
+
     {
         let mut f = unsafe { File::from_raw_fd(1) };
         writeln!(&mut f, "READY=1");
